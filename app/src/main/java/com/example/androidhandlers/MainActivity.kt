@@ -3,6 +3,7 @@ package com.example.androidhandlers
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import com.example.androidhandlers.databinding.ActivityMainBinding
 
 /*Gradle scripts/buildgraddle(Module)-> Activamos el view binding VERIFICAR!*/
@@ -10,13 +11,38 @@ import com.example.androidhandlers.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     //escoger correspondiente activity correspondiente a la pantalla
     private lateinit var binding:ActivityMainBinding
-
+    private lateinit var myHandler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnEjecutar.setOnClickListener{pasarPantalla()}
+        myHandler=Handler(mainLooper)
+        binding.btnEjecutar.setOnClickListener{
+            cargarPantalla()
+            //pasarPantalla()
+
+        }
+    }
+
+    private fun cargarPantalla() {
+        Thread{
+            try {
+                for (i in 0 .. 100){
+                    Thread.sleep(500)
+                    myHandler.post{
+                        binding.apply {
+                            txtPorcentaje.text="$i %"
+                            pbProgreso.progress=i
+                        }
+                    }
+                }
+
+            }catch (e:InterruptedException){
+                e.printStackTrace()
+
+            }
+        }.start()
     }
 
     private fun pasarPantalla() {
